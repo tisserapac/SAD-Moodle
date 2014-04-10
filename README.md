@@ -13,7 +13,7 @@ Download all files and import moodle.sql, modify config.php accordingly.
 Configuring your Ubuntu
 =========================
 
-sudo apt-get install php5-mysql apache2 libapache2-mod-php5 
+<code>sudo apt-get install php5-mysql apache2 libapache2-mod-php5</code>
 
 
 
@@ -27,16 +27,14 @@ it's better to point your server to which your cloned project is, just edit the 
 
 modify DocumentRoot  to where your cloned project is
 
+<pre><code>DocumentRoot /home/rey/Application/SAD-Moodle</code></pre>
 Add the following just below the DocmentRoot
 
-<pre><code>
-<Directory /home/rey/Application/SAD-Moodle>
+<pre><code>&lt;Directory /home/rey/Application/SAD-Moodle&gt;
         Options Indexes FollowSymLinks
         AllowOverride None
         Require all granted
-  </Directory>
-  
-</code></pre>
+&lt;/Directory&gt;</code></pre>
 
   
   
