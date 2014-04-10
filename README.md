@@ -14,6 +14,7 @@ Configuring your Ubuntu
 =========================
 
 sudo apt-get install php5-mysql apache2 libapache2-mod-php5 
+
 sudo apt-get install phpmyadmin
 
 
