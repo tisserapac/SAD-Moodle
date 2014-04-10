@@ -23,18 +23,20 @@ Configuring your Ubuntu
 Configuring Apache
 ====================
 
-it's better to point your server to which your cloned project is, just edit the file /etc/apache2/sites-available/000-default.conf
+it's better to point your server to which your cloned project is.
 
-modify DocumentRoot  to where your cloned project is
 
+/etc/apache2/sites-available/000-default.conf
 <pre><code>DocumentRoot /home/rey/Application/SAD-Moodle</code></pre>
-Add the following just below the DocmentRoot
+Add the following just below the DocumentRoot
 
 <pre><code>&lt;Directory /home/rey/Application/SAD-Moodle&gt;
         Options Indexes FollowSymLinks
         AllowOverride None
         Require all granted
 &lt;/Directory&gt;</code></pre>
+
+Of course you need to change /home/rey/Application/SAD-Moodle to where your project is located.
 
   
   
