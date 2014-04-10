@@ -29,11 +29,14 @@ modify DocumentRoot  to where your cloned project is
 
 Add the following just below the DocmentRoot
 
-  <Directory /home/rey/Application/SAD-Moodle>
+<pre><code>
+<Directory /home/rey/Application/SAD-Moodle>
         Options Indexes FollowSymLinks
         AllowOverride None
         Require all granted
   </Directory>
   
+</code></pre>
+
   
   
