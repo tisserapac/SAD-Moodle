@@ -15,8 +15,25 @@ Configuring your Ubuntu
 
 sudo apt-get install php5-mysql apache2 libapache2-mod-php5 
 
-sudo apt-get install phpmyadmin
 
 
 
 
+
+Configuring Apache
+====================
+
+it's better to point your server to which your cloned project is, just edit the file /etc/apache2/sites-available/000-default.conf
+
+modify DocumentRoot  to where your cloned project is
+
+Add the following just below the DocmentRoot
+
+  <Directory /home/rey/Application/SAD-Moodle>
+        Options Indexes FollowSymLinks
+        AllowOverride None
+        Require all granted
+  </Directory>
+  
+  
+  
