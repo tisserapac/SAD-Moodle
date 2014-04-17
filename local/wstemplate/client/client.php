@@ -22,14 +22,14 @@
 // 5- Run this script directly from your browser: you should see 'Hello, FIRSTNAME'
 
 /// SETUP - NEED TO BE CHANGED
-$token = 'dff3bc6a9368d3b0db1ef59f6760ef7c';
-$domainname = 'http://YOURMOODLE';
+$token = '2dc8d94dd7db75c4a2ace18a3b3191e3';
+$domainname = 'http://sad-moodle';
 
 /// FUNCTION NAME
-$functionname = 'local_wstemplate_hello_world';
+$functionname = 'local_wstemplate_course_list';
 
 /// PARAMETERS
-$welcomemsg = 'Hello, ';
+$studentid = 5;
 
 ///// XML-RPC CALL
 header('Content-Type: text/plain');

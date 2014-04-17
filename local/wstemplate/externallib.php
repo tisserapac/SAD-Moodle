@@ -41,29 +41,28 @@ class local_wstemplate_external extends external_api {
     public static function hello_world() {
         global $USER, $DB;
 
-		
-		$usercontexts = $DB->get_records_sql("SELECT c.instanceid, c.instanceid, u.firstname, u.lastname
+
+        $usercontexts = $DB->get_records_sql("SELECT c.instanceid, c.instanceid, u.firstname, u.lastname
                                                     FROM {role_assignments} ra, {context} c, {user} u
                                                    WHERE ra.userid = ?
                                                          AND ra.contextid = c.id
                                                          AND c.instanceid = u.id
-                                                         AND c.contextlevel = ".CONTEXT_USER, array($USER->id));		
-			
-		$result = array();
-		$count = 0;
-		 foreach ($usercontexts as $usercontext) {
-		        
-				$result[$count]['id']       = $usercontext->instanceid;
-			    $result[$count]['fullname'] =fullname($usercontext);               
-				$count++;
-            }
-	  
+                                                         AND c.contextlevel = " . CONTEXT_USER, array($USER->id));
+
+        $result = array();
+        $count = 0;
+        foreach ($usercontexts as $usercontext) {
+
+            $result[$count]['id'] = $usercontext->instanceid;
+            $result[$count]['fullname'] = fullname($usercontext);
+            $count++;
+        }
+
         //print_r($result);														 
         //Parameter validation
         //REQUIRED
-       // $params = self::validate_parameters(self::hello_world_parameters(),
-       //         array('welcomemessage' => $welcomemessage));
-		
+        // $params = self::validate_parameters(self::hello_world_parameters(),
+        //         array('welcomemessage' => $welcomemessage));
         //Context validation
         //OPTIONAL but in most web service it should present
         $context = get_context_instance(CONTEXT_USER, $USER->id);
@@ -74,12 +73,11 @@ class local_wstemplate_external extends external_api {
         //if (!has_capability('moodle/user:viewdetails', $context)) {
         //    throw new moodle_exception('cannotviewprofile');
         // }
-
-		//throw new moodle_exception('cannotviewprofile');
-        return $result ;;
-		
+        //throw new moodle_exception('cannotviewprofile');
+        return $result;
+        ;
     }
-	
+
     /**
      * Returns description of method result value
      * @return external_description
@@ -87,62 +85,113 @@ class local_wstemplate_external extends external_api {
     public static function hello_world_returns() {
         return new external_value(PARAM_ARR, array());
     }
-	
-	
-	
-	
-	
-	 public static function get_child_parameters() {
+
+    public static function get_child_parameters() {
         return new external_function_parameters(
                 array('welcomemessage' => new external_value(PARAM_TEXT, 'The welcome message. By default it is "Hello worldx,"', VALUE_DEFAULT, 'Hello worldx, '))
         );
     }
-	
-	
-	
-	
-	public static function get_child($welcomemessage = 'Hello world, ') {
+
+    public static function get_child($welcomemessage = 'Hello world, ') {
         global $USER, $DB;
 
         //Parameter validation
         //REQUIRED
-        /*$params = self::validate_parameters(self::get_child_parameters(),
-                array('welcomemessage' => $welcomemessage));*/
+        /* $params = self::validate_parameters(self::get_child_parameters(),
+          array('welcomemessage' => $welcomemessage)); */
 
         //Context validation
         //OPTIONAL but in most web service it should present
-       // $context = get_context_instance(CONTEXT_USER, $USER->id);
-       // self::validate_context($context);
-
+        // $context = get_context_instance(CONTEXT_USER, $USER->id);
+        // self::validate_context($context);
         //Capability checking
         //OPTIONAL but in most web service it should present
-       // if (!has_capability('moodle/user:viewdetails', $context)) {
-       //     throw new moodle_exception('cannotviewprofile');
+        // if (!has_capability('moodle/user:viewdetails', $context)) {
+        //     throw new moodle_exception('cannotviewprofile');
         //}
 
-		$usercontexts = $DB->get_records_sql("SELECT c.instanceid, c.instanceid, u.firstname, u.lastname
+        $usercontexts = $DB->get_records_sql("SELECT c.instanceid, c.instanceid, u.firstname, u.lastname
                                                     FROM {role_assignments} ra, {context} c, {user} u
                                                    WHERE ra.userid = ?
                                                          AND ra.contextid = c.id
                                                          AND c.instanceid = u.id
-                                                         AND c.contextlevel = ".CONTEXT_USER, array($USER->id));		
-			
-		$result = array();
-		$count = 0;
-		 foreach ($usercontexts as $usercontext) {
-		        
-				$result[$count]['id']       = $usercontext->instanceid;
-			    $result[$count]['fullname'] =fullname($usercontext);               
-				$count++;
-            }
-			
-        return $result;;
+                                                         AND c.contextlevel = " . CONTEXT_USER, array($USER->id));
+
+        $result = array();
+        $count = 0;
+        foreach ($usercontexts as $usercontext) {
+
+            $result[$count]['id'] = $usercontext->instanceid;
+            $result[$count]['fullname'] = fullname($usercontext);
+            $count++;
+        }
+
+        return $result;
+        ;
     }
-	
-	 public static function get_child_returns() {
+
+    public static function get_child_returns() {
         return new external_value(PARAM_TEXT, 'The welcome message + user first name');
     }
+    
+    //==========
+    
+    /**
+     * Returns description of method parameters
+     * @return external_function_parameters
+     */
+    public static function get_course_list_parameters() {
+        return new external_function_parameters(
+                array('studentid' => new external_value(PARAM_INT, 'The student id'))
+        );
+    }
+    /**
+     * 
+     * @global type $DB
+     * @param type $studentid - The id of the student who's course list needs to be retrieved
+     * @return type
+     */
+    public static function get_course_list($studentid) {
+        global $DB;
 
+        $courses = $DB->get_records_sql("SELECT u.firstname, u.lastname, c.id, c.fullname
+                                              FROM mdl_course AS c
+                                              JOIN mdl_context AS ctx ON c.id = ctx.instanceid
+                                              JOIN mdl_role_assignments AS ra ON ra.contextid = ctx.id
+                                              JOIN mdl_user AS u ON u.id = ra.userid
+                                              WHERE u.id = ?", $studentid);
 
+        $result = array();
+        $count = 0;
+        foreach ($courses as $course) {
+
+            $result[$count]['courseid'] = $course->id;
+            $result[$count]['coursename'] = $course->fullname;
+            $result[$count]['stfirstname'] = $course->firstname;
+            $result[$count]['stlastname'] = $course->lastname;
+            $count++;
+        }
+
+        return $result;
+    }
+    
+    /**
+     * Returns description of method result value
+     * @return external_description
+     */
+    public static function get_course_list_returns() {
+       return new external_multiple_structure(
+            new external_single_structure(
+                array(
+                    'courseid' => new external_value(PARAM_INT, 'id of course'),
+                    'fullname' => new external_value(PARAM_TEXT, 'full name of course'),
+                    'firstname' => new external_value(PARAM_TEXT, 'first name of student'),
+                    'lastname' => new external_value(PARAM_TEXT, 'first name of student'),
+                )
+            )
+        );
+    }
+    
+    //==========
 
 }
