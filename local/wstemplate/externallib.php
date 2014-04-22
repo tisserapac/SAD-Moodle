@@ -140,7 +140,7 @@ class local_wstemplate_external extends external_api {
      * Returns description of method parameters
      * @return external_function_parameters
      */
-    public static function get_course_list_parameters() {
+    public static function course_list_parameters() {
         return new external_function_parameters(
                 array('studentid' => new external_value(PARAM_INT, 'The student id'))
         );
@@ -151,15 +151,17 @@ class local_wstemplate_external extends external_api {
      * @param type $studentid - The id of the student who's course list needs to be retrieved
      * @return type
      */
-    public static function get_course_list($studentid) {
+    public static function course_list($studentid) {
         global $DB;
 
+        //Need to validate the child belongs to the loged in parent
+        
         $courses = $DB->get_records_sql("SELECT u.firstname, u.lastname, c.id, c.fullname
-                                              FROM mdl_course AS c
-                                              JOIN mdl_context AS ctx ON c.id = ctx.instanceid
-                                              JOIN mdl_role_assignments AS ra ON ra.contextid = ctx.id
-                                              JOIN mdl_user AS u ON u.id = ra.userid
-                                              WHERE u.id = ?", $studentid);
+                                              FROM {course} AS c
+                                              JOIN {context} AS ctx ON c.id = ctx.instanceid
+                                              JOIN {role_assignments} AS ra ON ra.contextid = ctx.id
+                                              JOIN {user} AS u ON u.id = ra.userid
+                                              WHERE u.id = ?", array( $studentid));
 
         $result = array();
         $count = 0;
@@ -179,7 +181,7 @@ class local_wstemplate_external extends external_api {
      * Returns description of method result value
      * @return external_description
      */
-    public static function get_course_list_returns() {
+    public static function course_list_returns() {
        return new external_multiple_structure(
             new external_single_structure(
                 array(
@@ -193,5 +195,66 @@ class local_wstemplate_external extends external_api {
     }
     
     //==========
+     /**
+     * Returns description of method parameters
+     * @return external_function_parameters
+     */
+    public static function get_attendance_parameters() {
+        return new external_function_parameters(
+                array('studentid' => new external_value(PARAM_INT, 'The student id'),
+                      'courseid' => external_value(PARAM_INT, 'The course id'))
+        );
+    }
+    
+    /**
+     * 
+     * @global type $DB
+     * @param type $studentid
+     * @param type $courseid
+     * @return type
+     */
+    public static function get_attendance($studentid,$courseid) {
+        global $DB;
+        
+        //Need to validate the child belongs to the loged in parent
+        
+        $attendences = $DB->get_records_sql("SELECT t1.id, t1.timetaken, t4.description
+                                            FROM {attendance_log} t1
+                                            INNER JOIN {attendance_sessions} t2 ON t1.sessionid = t2.id
+                                            INNER JOIN {attendance} t3 ON t2.attendanceid = t3.id
+                                            INNER JOIN {attendance_statuses}  t4 ON t1.statusid = t4.id
+                                            WHERE (t1.statusid =6 OR t1.statusid =7)AND t1.studentid = ? 
+                                            AND course = ? AND t1.remarks = ''",array($studentid,$courseid));
 
+        $result = array();
+        $count = 0;
+        foreach ($attendences as $attendance) {
+
+            $result[$count]['id'] = $attendance->id;
+            $result[$count]['time'] = $attendance->timetaken;
+            $result[$count]['description'] = $attendance->description;
+            $count++;
+        }
+
+        return $result;
+    }
+    
+    /**
+     * Returns description of method result value
+     * @return external_description
+     */
+    public static function get_attendance_returns() {
+       return new external_multiple_structure(
+            new external_single_structure(
+                array(
+                    'id' => new external_value(PARAM_INT, 'Id of the attendance_log db table'),
+                    'time' => new external_value(PARAM_TEXT, 'Absent or Late date time'),
+                    'description' => new external_value(PARAM_TEXT, 'Absent or Late'),
+                )
+            )
+        );
+    }
+    
+    //==========
+    
 }

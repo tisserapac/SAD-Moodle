@@ -38,9 +38,16 @@ $functions = array(
     ),
     'local_wstemplate_course_list' => array(
         'classname' => 'local_wstemplate_external',
-        'methodname' => 'get_course_list',
+        'methodname' => 'course_list',
         'classpath' => 'local/wstemplate/externallib.php',
         'description' => 'Return the list of courses enrolled by a student',
+        'type' => 'read',
+    ),
+    'local_wstemplate_get_attendance' => array(
+        'classname' => 'local_wstemplate_external',
+        'methodname' => 'get_attendance',
+        'classpath' => 'local/wstemplate/externallib.php',
+        'description' => 'Return the list of absent and late dates for a course by a student',
         'type' => 'read',
     )
 );
@@ -48,7 +55,7 @@ $functions = array(
 // We define the services to install as pre-build services. A pre-build service is not editable by administrator.
 $services = array(
     'My service' => array(
-        'functions' => array('local_wstemplate_hello_world', 'local_wstemplate_quick_test','local_wstemplate_course_list'),
+        'functions' => array('local_wstemplate_hello_world', 'local_wstemplate_quick_test','local_wstemplate_course_list','local_wstemplate_get_attendance'),
         'restrictedusers' => 0,
         'enabled' => 1,
     )

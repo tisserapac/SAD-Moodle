@@ -7,7 +7,7 @@ $CFG = new stdClass();
 $CFG->dbtype    = 'mysqli';
 $CFG->dblibrary = 'native';
 $CFG->dbhost    = 'localhost';
-$CFG->dbname    = 'moodle';
+$CFG->dbname    = 'moodle2';
 $CFG->dbuser    = 'root';
 $CFG->dbpass    = '';
 $CFG->prefix    = 'mdl_';
@@ -17,8 +17,9 @@ $CFG->dboptions = array (
   'dbsocket' => '',
 );
 
-$CFG->wwwroot   = 'http://203.159.6.202/moodle';
-$CFG->dataroot  = '/var/data/moodledata';
+//$CFG->wwwroot   = 'http://203.159.6.202/moodle';
+$CFG->wwwroot   = 'http://sad-moodle';
+$CFG->dataroot  = '/var/moodledata';
 $CFG->admin     = 'admin';
 
 $CFG->directorypermissions = 0777;
