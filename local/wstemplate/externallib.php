@@ -202,7 +202,7 @@ class local_wstemplate_external extends external_api {
     public static function get_attendance_parameters() {
         return new external_function_parameters(
                 array('studentid' => new external_value(PARAM_INT, 'The student id'),
-                      'courseid' => external_value(PARAM_INT, 'The course id'))
+                      'courseid' => new external_value(PARAM_INT, 'The course id'))
         );
     }
     
@@ -218,7 +218,7 @@ class local_wstemplate_external extends external_api {
         
         //Need to validate the child belongs to the loged in parent
         
-        $attendences = $DB->get_records_sql("SELECT t1.id, t1.timetaken, t4.description
+        $attendences = $DB->get_records_sql("SELECT t1.id, t2.sessdate, t4.description
                                             FROM {attendance_log} t1
                                             INNER JOIN {attendance_sessions} t2 ON t1.sessionid = t2.id
                                             INNER JOIN {attendance} t3 ON t2.attendanceid = t3.id
@@ -231,7 +231,7 @@ class local_wstemplate_external extends external_api {
         foreach ($attendences as $attendance) {
 
             $result[$count]['id'] = $attendance->id;
-            $result[$count]['time'] = $attendance->timetaken;
+            $result[$count]['time'] = date("Y-m-d", $attendance->sessdate);
             $result[$count]['description'] = $attendance->description;
             $count++;
         }
