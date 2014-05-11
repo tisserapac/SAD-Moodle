@@ -70,7 +70,16 @@ $functions = array(
         'classpath' => 'local/wstemplate/externallib.php',
         'description' => 'Update the remarks for the attendance sent by a parent',
         'type' => 'write',
-    ) 
+    ),
+    'local_wstemplate_get_grades_all' => array(
+        'classname' => 'local_wstemplate_external',
+        'methodname' => 'get_grades_all',
+        'classpath' => 'local/wstemplate/externallib.php',
+        'description' => 'Return the list of all grades of children of a parent',
+        'type' => 'read',
+    )
+    
+    
 );
 
 // We define the services to install as pre-build services. A pre-build service is not editable by administrator.
@@ -79,7 +88,8 @@ $services = array(
         'functions' => array('local_wstemplate_hello_world', 'local_wstemplate_quick_test',
                              'local_wstemplate_course_list','local_wstemplate_get_attendance',
                              'local_wstemplate_get_attendance_all_nested',
-                             'local_wstemplate_get_attendance_all','local_wstemplate_update_attendance_remarks'),
+                             'local_wstemplate_get_attendance_all','local_wstemplate_update_attendance_remarks',
+                             'local_wstemplate_get_grades_all'),
         'restrictedusers' => 0,
         'enabled' => 1,
     )

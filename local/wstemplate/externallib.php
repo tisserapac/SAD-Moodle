@@ -41,7 +41,6 @@ class local_wstemplate_external extends external_api {
     public static function hello_world() {
         global $USER, $DB;
 
-
         $usercontexts = $DB->get_records_sql("SELECT c.instanceid, c.instanceid, u.firstname, u.lastname
                                                     FROM {role_assignments} ra, {context} c, {user} u
                                                    WHERE ra.userid = ?
@@ -61,7 +60,6 @@ class local_wstemplate_external extends external_api {
         self::validate_context($context);
         
         return $result;
-        ;
     }
 
     /**
@@ -98,13 +96,13 @@ class local_wstemplate_external extends external_api {
         }
 
         return $result;
-        ;
     }
 
     public static function get_child_returns() {
         return new external_value(PARAM_TEXT, 'The welcome message + user first name');
     }
 
+    //==========
     //==========
 
     /**
@@ -165,7 +163,87 @@ class local_wstemplate_external extends external_api {
                 )
         );
     }
+    //==========
+    //==========
+    
+    /**
+     * Returns description of method parameters
+     * @return external_function_parameters
+     */
+    public static function get_grades_all_parameters() {
+        return new external_function_parameters(
+                array('message' => new external_value(PARAM_TEXT, 'The initial message. By default it is "All '
+                                                                  . 'Grades,"', VALUE_DEFAULT, 'All '
+                                                                  . 'Grades, '))
+        );
+    }
 
+    /**
+     * 
+     * @global type $DB
+     * @param type $studentid - The id of the student who's course list needs to be retrieved
+     * @return type
+     */
+    public static function get_grades_all($studentid) {
+        global $USER, $DB;
+        
+        $usercontexts = $DB->get_records_sql("SELECT c.instanceid, u.firstname, u.lastname
+                                              FROM {role_assignments} ra, {context} c, {user} u
+                                              WHERE ra.userid = ?
+                                              AND ra.contextid = c.id
+                                              AND c.instanceid = u.id
+                                              AND c.contextlevel = " . CONTEXT_USER, array($USER->id));
+
+        $result =  array();
+        $count = 0;
+        foreach ($usercontexts as $usercontext) {
+            
+            $result[$count]['id'] = $usercontext->instanceid;
+            $result[$count]['fullname'] = fullname($usercontext);
+            
+            $grades = $DB->get_records_sql("SELECT gg.finalgrade, gi.courseid, c.fullname as coursename     
+                                            FROM {grade_grades} gg
+                                            INNER JOIN {grade_items} gi ON gg.itemid = gi.id
+                                            INNER JOIN {course} AS c ON gi.courseId = c.id
+                                            WHERE gg.userid = ? ",array ($usercontext->instanceid));
+            $result_grade = array();
+            $count2 = 0;
+            
+            foreach ($grades as $grade) {
+                $result_grade[$count2]['courseid'] = $grade->courseid;
+                $result_grade[$count2]['coursename'] = $grade->coursename;
+                $result_grade[$count2]['grade'] = $grade->finalgrade;
+                $count2++;
+            }
+            $result[$count]['grades'] = $result_grade;
+            $count++;
+        }
+        
+        $final_result =  array();
+        $final_result['grades'] = $result;
+        return $final_result;
+    }
+
+    /**
+     * Returns description of method result value
+     * @return external_description
+     */
+    public static function get_grades_all_returns() {
+        return new external_multiple_structure(
+            new external_single_structure(
+                array ('id' => new external_value(PARAM_INT, 'Id of the student'),
+                       'fullname' => new external_value(PARAM_TEXT, 'full name of student'),
+                        array('cousreid' => new external_value(PARAM_TEXT, 'course id'),
+                              'cousename' => new external_value(PARAM_TEXT, 'course name'),
+                              'grade' => new external_value(PARAM_TEXT, 'grade')
+                        )
+            
+                )
+            )
+        );
+    }
+    
+    //==========
     //==========
     /**
      * Returns description of method parameters
@@ -174,7 +252,7 @@ class local_wstemplate_external extends external_api {
     public static function get_attendance_parameters() {
         return new external_function_parameters(
                 array('studentid' => new external_value(PARAM_INT, 'The student id'),
-            'courseid' => new external_value(PARAM_INT, 'The course id'))
+                      'courseid' => new external_value(PARAM_INT, 'The course id'))
         );
     }
 
@@ -190,12 +268,12 @@ class local_wstemplate_external extends external_api {
 
         //Need to validate the child belongs to the loged in parent
 
-        $attendences = $DB->get_records_sql("SELECT t1.id, t2.sessdate, t4.description
-                                            FROM {attendance_log} t1
-                                            INNER JOIN {attendance_sessions} t2 ON t1.sessionid = t2.id
-                                            INNER JOIN {attendance} t3 ON t2.attendanceid = t3.id
-                                            INNER JOIN {attendance_statuses}  t4 ON t1.statusid = t4.id
-                                            WHERE (t4.description = 'Late' OR t4.description = 'Absent')AND t1.studentid = ? 
+        $attendences = $DB->get_records_sql("SELECT al.id, as.sessdate, ats.description
+                                            FROM {attendance_log} al
+                                            INNER JOIN {attendance_sessions} as ON al.sessionid = as.id
+                                            INNER JOIN {attendance} att ON as.attendanceid = att.id
+                                            INNER JOIN {attendance_statuses}  ats ON al.statusid = ats.id
+                                            WHERE (ats.description = 'Late' OR ats.description = 'Absent')AND al.studentid = ? 
                                             AND course = ?", array($studentid, $courseid));
 
         $result = array();
@@ -218,11 +296,10 @@ class local_wstemplate_external extends external_api {
     public static function get_attendance_returns() {
         return new external_multiple_structure(
                 new external_single_structure(
-                array(
-            'id' => new external_value(PARAM_INT, 'Id of the attendance_log db table'),
-            'time' => new external_value(PARAM_TEXT, 'Absent or Late date time'),
-            'description' => new external_value(PARAM_TEXT, 'Absent or Late'),
-                )
+                    array('id' => new external_value(PARAM_INT, 'Id of the attendance_log db table'),
+                          'time' => new external_value(PARAM_TEXT, 'Absent or Late date time'),
+                          'description' => new external_value(PARAM_TEXT, 'Absent or Late'),
+                    )
                 )
         );
     }
@@ -301,10 +378,10 @@ class local_wstemplate_external extends external_api {
 
             $count++;
         }
-        //echo '<pre>';
-        //print_r($result);
-        //exit();
-        return $result;
+        
+        $final_result =  array();
+        $final_result['children'] = $result;
+        return $final_result;
     }
 
     /**
@@ -437,8 +514,8 @@ class local_wstemplate_external extends external_api {
     public static function update_attendance_remarks($attendanceid, $remarks) {
         global $DB;
         
-        if ($DB->record_exists('attendance_log', array('id' => $attendanceid))) {
-        
+        if ($DB->record_exists('attendance_log', array('id' => $attendanceid))) {  
+            
             $result = $DB->set_field('attendance_log', 'remarks', $remarks, array('id' => $attendanceid));
         }
         
